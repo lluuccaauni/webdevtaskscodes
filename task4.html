@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--title-->
+        <title>Calculate prime numbers (Sieve of Atkin method)</title>
+
+        <style>
+            #center { /*center the elements*/
+                width: 70%;
+                margin: auto;
+            }
+            h1, h3 { /*center the headings*/
+                text-align: center;
+            }
+            h1 {
+                margin-top: 20pt; /*add some space to the top of the first heading*/
+                font-family: monospace; /*change font family*/
+                font-size: 2.4em; /*change font size*/
+            }
+            h3 {
+                font-style: italic; /*change font style to the second heading (from normal to italics)*/
+                font-weight: normal; /*change font weight (from bold to normal)*/
+
+                margin-top: -14pt; /*make it get closer to the first heading*/
+            }
+            input {
+                text-align: center;
+                width: 20%; /*reduce the width to avoid the occupation of unused space*/
+            }
+            button {
+                font-weight: bold;
+                font-size: 15pt;
+
+                margin-top: 5pt;
+                border-radius: 6pt; /*smooth out the edges*/
+
+                /*add some padding to the button text*/
+                padding: 5pt 7pt;
+            }
+            hr {
+                width: 100%;
+                margin-top: 15pt;
+
+                border: dashed 1.4pt black; /*define a dashed border, 1.4 points thick*/
+            }
+            #primenumbersdiv {
+                /*align to the center*/
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                border: dashed 2pt green;
+                border-radius: 3pt;
+                padding: 7pt;
+            }
+            #result {
+                font-family: sans-serif;
+                /*make the paragraph look as if it was justified*/
+                text-align: justify;
+                text-justify: inter-word;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="center">
+            <!--headings-->
+            <h1>Prime numbers calculator</h1>
+            <h3>Specify the highest number in the textbox and press the button to calculate</h3>
+
+            <div id="primenumbersdiv">
+                <!--input box-->
+                <input id="limit" type="number" max="50000" placeholder="Highest desired value">
+                <!--button-->
+                <button onclick="calculatePrimeNumbers()">Calculate</button>
+                <!--separating line-->
+                <hr/>
+                <!--result paragraph-->
+                <p id="result"><i>prime numbers will appear here</i></p>
+            </div>
+        </div>
+
+        <script>
+            function calculatePrimeNumbers() {
+                //check if the minimum value for limit is respected
+                let limit= document.getElementById("limit").value;
+                if(limit < 2) {//if not...
+                    //...warn the user and terminate the script
+                    alert("Limit cannot be lower than 2.");
+                    return;
+                }
+
+                //declare an empty array
+                let numbersList = [];
+                //initialize it with numbers from 1 (index 0) to the limit (index limit-1)
+                for(let i = 1; i <= limit; i++)
+                    numbersList.push(i);
+                //create an array, filled with "false" values, to keep track of which numbers are prime and which ones are not
+                let isPrimeList = Array(limit).fill(false);
+                //mark 2, 3 and 5 as prime numbers, as they are both known prime numbers (respective indexes are 1, 2, 4)
+                isPrimeList[1] = true;
+                isPrimeList[2] = true;
+                isPrimeList[4] = true;
+
+                //this is the step of going through all the possible values for x and y
+                //it is a crucial step, as the solutions (x,y pairs) will give a number which is then checked according to a few conditions
+                for(let x = 1; x < limit; x++) {
+                    for(let y = 1; y < limit; y++) {
+                        /*a number n is considered to be prime (or a multiple) if any of the following conditions is evaluated as true:
+                          FIRST condition:
+                            Equation is 4x^2 + y^2 = n
+                            -> The number of solution pairs (x, y) is odd and the remainder of n divided by 4 has to be 1 (this is
+                               very important, as the remainder of the division of n by 4 tells us whether for that value of n we
+                               have an odd number of pairs or not).
+                            !> The same goes for the following two conditions, just with different reminders to consider.
+                          SECOND condition:
+                            Equation is 3x^2 + y^2 = n
+                            -> The number of solution pairs (x, y) is odd and the remainder of n divided by 12 has to be 7.
+                          THIRD condition:
+                            Equation is 3x^2 - y^2 = n
+                            -> The number of solution pairs (x, y) is odd and the remainder of n divided by 12 has to be 11.
+                            -> In addition, x has to be higher than y.
+
+                          Two important notes follow.
+                          1) 'n' must not be greater than the limit. In fact, even though the evaluation is based on n % k, n is the
+                             number to be marked as either prime or not prime. This means that, assuming, as an example, that our limit
+                             is 41 (a prime number), then the highest value that n should be able to assume is 41. Hence, this is a
+                             further condition that must be embedded in all the three cases presented above.
+                          2) These conditions only serve to identify those numbers that are POTENTIALLY prime. This means that they
+                             are not enough, as the squares of prime numbers and multiples of these squares are still to be removed.
+                         */
+
+                        //FIRST condition implementation:
+                        let nFirst = 4 * Math.pow(x, 2) + Math.pow(y, 2);
+                        if (nFirst <= limit && (nFirst % 4) === 1)
+                            isPrimeList[nFirst - 1] = true;
+
+                        //SECOND condition implementation:
+                        let nSecond = 3 * Math.pow(x, 2) + Math.pow(y, 2);
+                        if (nSecond <= limit && (nSecond % 12) === 7)
+                            isPrimeList[nSecond - 1] = true;
+
+                        //THIRD condition implementation:
+                        let nThird = 3 * Math.pow(x, 2) - Math.pow(y, 2);
+                        if (nThird <= limit && (nThird % 12) === 11 &&
+                            x > y)
+                            isPrimeList[nThird - 1] = true;
+                    }
+                }
+
+                /*We may still bump into numbers that are not prime (see above). These have to be removed.
+                   In addition, as we are talking about the squares or prime numbers, that is the value to start from in the nested
+                   array (the first one simply goes through all the numbers up to the limit starting from 2).*/
+
+                for(let i = 1; i < limit; i++) //counting starts from the number 2
+                    if(isPrimeList[i]) //if the number is marked as prime
+                        //check for multiples, and mark them as non-prime
+                        for(let multiple = Math.pow(numbersList[i], 2); multiple < limit; multiple += numbersList[i])
+                            isPrimeList[multiple - 1] = false;
+
+                /*As far as regards the output, the array with all the numbers (non-primes as well) is visited again, and those that
+                  are marked as prime, are then appended to a string, so that the prime numbers can be displayed with ease.*/
+                let outputString = "";
+                for (let i = 0; i < limit; i++)
+                    if (isPrimeList[i] === true)
+                        outputString += numbersList[i] + ", ";
+
+                //remove the last, useless characters (", "), and display
+                outputString = outputString.slice(0, outputString.length - 2);
+
+                document.getElementById("result").innerHTML = outputString;
+            }
+        </script>
+    </body>
+</html>

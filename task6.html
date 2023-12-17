@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <title>Submit a new order</title>
+        
+        <style>
+            body {
+                background-color: gainsboro;
+            }
+            label {
+                font-family: sans-serif;
+                font-weight: bold;
+                font-size: 11pt;
+            }
+            #centerdiv {
+                margin: auto;
+                width: 50%;
+                border: 3px solid green;
+                border-radius: 4pt;
+                padding: 10px;
+            }
+            .additionalspace {
+                margin-top: 8pt;
+                display: inline-block;
+            }
+            #motherboardModel, #HPCPUsModel, #MPCPUsModel, #BPCPUsModel, #HPRAMModel, #MPRAMModel, #BPRAMModel {
+                display: none;
+            }
+            #total {
+                text-align: right;
+                font-weight: bold;
+                font-size: 20pt;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- mouse, tastiera, monitor-->
+        <div id="centerdiv">
+            <form>
+                <!--Case-->
+                <label>Case:</label>
+                <div>
+                    <select id="caseModel" onchange="showMotherboard()">
+                        <option value="">Select an option</option>
+                        <option name="atxCASE" value="atxCASE">For ATX MBs (EUR 100)</option>
+                        <option name="microatxCASE" value="microatxCASE">For micro-ATX MBs (EUR 80)</option>
+                        <option name="miniatxCASE" value="miniatxCASE">For mini-ATX MBs (EUR 70)</option>
+                    </select>
+                </div>
+                
+                <!--Motherboard-->
+                <label class="additionalspace">Motherboard:</label><br>
+                <label id="selectcasewarning" style="background-color: orangered"><u>{Select case to view options}</u></label>
+                <div>
+                    <select id="motherboardModel" onchange="showComponents()">
+                        <option value="">Select an option</option>
+                        <option id="atxMB" value="atxMB">ATX format, for high-end PCs (EUR 200)</option>
+                        <option id="microatxMB" value="microatxMB">Micro-ATX format, for average performance (EUR 100)</option>
+                        <option value="miniatxMB">Mini-ATX format, for low-end PCs (EUR 80)</option>
+                    </select>
+                </div>
+                
+                <!--CPUs-->
+                <label class="additionalspace">Supported CPUs (proper heat sink included):</label><br>
+                <label class="selectmotherboardwarning" style="background-color: orangered"><u>{Select motherboard to view options}</u></label>
+                <div>
+                    <select id="HPCPUsModel" onchange="CPUPrice()">
+                        <option value="">Select an option</option>
+                        <option value="HPCPU16C32T">High performance, 16 cores, 32 threads, 4.8GHz (EUR 400)</option>
+                        <option value="HPCPU8C16T">High performance, 8 cores, 16 threads, 5.1GHz (EUR 300)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="MPCPUsModel" onchange="CPUPrice()">
+                        <option value="">Select an option</option>
+                        <option value="MPCPU6C12T">Middle performance, 6 cores, 12 threads, 3.4GHz (EUR 230)</option>
+                        <option value="MPCPU4C8T">Middle performance, 4 cores, 8 threads, 3.6GHz (EUR 200)</option>
+                        <option value="MPCPU4C4T">Middle performance, 4 cores, 4 threads, 3.4GHz (EUR 160)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="BPCPUsModel" onchange="CPUPrice()">
+                        <option value="">Select an option</option>
+                        <option value="BPCPU2C4T">Basic performance, 2 cores, 4 threads, 2.9GHz (EUR 80)</option>
+                        <option value="BPCPU2C2T">Basic performance, 2 cores, 2 threads, 2.6GHz (EUR 60)</option>
+                    </select>
+                </div>
+                
+                <!--RAM-->
+                <label class="additionalspace">Supported RAM:</label><br>
+                <label class="selectmotherboardwarning" style="background-color: orangered"><u>{Select motherboard to view options}</u></label>
+                <div>
+                    <select id="HPRAMModel" onchange="RAMPrice()">
+                        <option value="">Select an option</option>
+                        <option value="DDR532GB6000">High performance, DDR5, 32GB, 6000MHz (EUR 140)</option>
+                        <option value="DDR532GB4800">High performance, DDR5, 32GB, 4800MHz (EUR 100)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="MPRAMModel" onchange="RAMPrice()">
+                        <option value="">Select an option</option>
+                        <option value="DDR416GB3200">Middle performance, DDR4, 16GB, 3200MHz (EUR 60)</option>
+                        <option value="DDR416GB2667">Middle performance, DDR4, 15GB, 2667MHz (EUR 40)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="BPRAMModel" onchange="RAMPrice()">
+                        <option value="">Select an option</option>
+                        <option value="DDR48GB3122">Basic performance, DDR4, 8GB, 2133MHz (EUR 35)</option>
+                        <option value="DDR38GB1600">Basic performance, DDR3, 8GB, 1600MHz (EUR 27)</option>
+                    </select>
+                </div>
+
+                <!--DEDICATED GPU-->
+                <label class="additionalspace">Dedicated GPU:</label>
+                <div>
+                    <select id="GPUModel" onchange="GPUPrice()">
+                        <option value="">None</option>
+                        <option value="DDR516GB2500">Top performance, VRAM 16GB, 9700 2.5GHz cores (EUR 1200)</option>
+                        <option value="DDR58GB1700">Middle performance, VRAM 8GB, 2500 1.7GHz cores (EUR 700)</option>
+                        <option value="DDR52GB1400">Entry level performance, VRAM 2GB, 400 1.4GHz cores (EUR 160)</option>
+                    </select>
+                </div>
+                
+                <!--STORAGE-->
+                <label  class="additionalspace">SSD:</label>
+                <select id="SSDModel" onchange="SSDPrice()">
+                    <option value="">None</option>
+                    <option value="SSD2TB">2TB (EUR 140)</option>
+                    <option value="SSD1TB">1TB (EUR 70)</option>
+                    <option value="SSD500GB">500GB (EUR 45)</option>
+                    <option value="SSD120GB">120GB (EUR 36)</option>
+                </select>
+                <br>
+                <label>HDD:</label>
+                <select id="HDDModel" onchange="HDDPrice()">
+                    <option value="">None</option>
+                    <option value="HDD2TB">2TB (EUR 80)</option>
+                    <option value="HDD1TB">1TB (EUR 55)</option>
+                    <option value="HDD500GB">500GB (EUR 38)</option>
+                    <option value="HDD120GB">120GB (EUR 26)</option>
+                </select><br>
+                
+                <!--DISC STORAGE-->
+                <label class="additionalspace">Disc storage:</label><br>
+                <label><input id="discdrivecheck" type="checkbox" onchange="discDriveCheck()" name="discdrive" value="1">CD/DVD/BD Reader/Re-Writer Drive (EUR 70)</label><br>
+                
+                <label class="additionalspace">Cooling options:</label><br>
+                <!--ADDITIONAL FANS-->
+                <label><input id="additionalfanscheck" onchange="additionalFansCheck()" type="checkbox" name="additionalfans" value="1">Additional fans for optimized airflow (EUR 30)</label><br>
+                <!--FAN CONTROLLER-->
+                <label><input id="fancontrollercheck" onchange="fanControllerCheck()" type="checkbox" name="fancontroller" value="1">Fan controller, to adjust fan speed (EUR 20)</label><br>
+                
+                <label class="additionalspace">Extra peripherals:</label><br>
+                <!--MOUSE-->
+                <label><input id="mousecheck" onchange="mouseCheck()" type="checkbox" name="mouse" value="1">Mouse (EUR 10)</label><br>
+                <!--KEYBOARD-->
+                <label><input id="keyboardcheck" onchange="keyboardCheck()" type="checkbox" name="keyboard" value="1">Keyboard (EUR 20)</label><br>
+                <!--MONITOR-->
+                <label><input id="monitorcheck" onchange="monitorCheck()" type="checkbox" name="monitor" value="1">Monitor (EUR 200)</label>
+            </form>
+            
+            <p id="total">TOTAL: <span id="totalcost">####</span></p>
+        </div>
+        
+        <script>
+            /*selectcasewarning selectmotherboardwarning checkoptionwarning*/
+            let listOfPrices = new Array(13).fill(0);
+            
+            let selectElements = [
+                document.getElementById("caseModel"),
+                document.getElementById("motherboardModel"),
+                document.getElementById("HPCPUsModel"),
+                document.getElementById("MPCPUsModel"),
+                document.getElementById("BPCPUsModel"),
+                document.getElementById("HPRAMModel"),
+                document.getElementById("MPRAMModel"),
+                document.getElementById("BPRAMModel")
+            ];
+            
+            function showMotherboard() {
+                let selectedCase = selectElements[0].options[selectElements[0].selectedIndex].value;
+                
+                if(selectedCase !== "") { //if a case has been selected
+                    //reset motherboard, CPU, and RAM selections, other than prices, in case of change in choice
+                    selectElements[1].value = "";
+                    showHideMoboWarning(0);
+                    resetMotherboard();
+                    resetCPURAM();
+                    
+                    //continue form
+                    document.getElementById("selectcasewarning").style.display = "none"; //hide warning
+                    selectElements[1].style.display = "block"; //show motherboard options
+                
+                    //show different motherboard format sizes based on the case supported formats
+                    if(selectedCase === "atxCASE") {
+                        document.getElementById("atxMB").style.display = "block";
+                        document.getElementById("microatxMB").style.display = "block";
+                        listOfPrices[0] = 100;
+                    }
+                    else if(selectedCase === "microatxCASE") {
+                        document.getElementById("atxMB").style.display = "none";
+                        document.getElementById("microatxMB").style.display = "block";
+                        listOfPrices[0] = 80;
+                    }
+                    else if(selectedCase === "miniatxCASE") {
+                        document.getElementById("atxMB").style.display = "none";
+                        document.getElementById("microatxMB").style.display = "none";
+                        listOfPrices[0] = 70;
+                    }
+                } //if no case has been selected or if choice has been reset
+                else {
+                    //restore warnings
+                    document.getElementById("selectcasewarning").style.display = "block";
+                    showHideMoboWarning(0);
+                    selectElements[1].style.display = "none"; //hide the motherboard format sizes
+                    
+                    //reset to default motherboard value and reset price for the motherboard
+                    resetMotherboard();
+                    //reset CPU and RAM information-related as well
+                    resetCPURAM();
+                }
+                
+                casePrice();
+            }
+            
+            function showComponents() {
+                let selectedMotherboard = selectElements[1].options[selectElements[1].selectedIndex].value;
+                
+                if(selectedMotherboard !== "") {//if a motherboard model is selected
+                    showHideMoboWarning(1); //hide the related warning
+                
+                    //reset in case of change in choice
+                    resetCPURAM();
+                    
+                    //based on the motherboard format, unlock different CPU and RAM options
+                    if(selectedMotherboard === "atxMB") {
+                        document.getElementById("HPCPUsModel").style.display = "block";
+                        document.getElementById("HPRAMModel").style.display = "block";
+                    }
+                    else if(selectedMotherboard === "microatxMB") {
+                        document.getElementById("MPCPUsModel").style.display = "block";
+                        document.getElementById("MPRAMModel").style.display = "block";
+                    }
+                    else if(selectedMotherboard === "miniatxMB") {
+                        document.getElementById("BPCPUsModel").style.display = "block";
+                        document.getElementById("BPRAMModel").style.display = "block";
+                    }
+                }
+                else {//is no motherboard is selected anymore, reset CPU and RAM options, and restore warning
+                    resetCPURAM();
+                    showHideMoboWarning(0);
+                }
+                
+                motherboardPrice();
+            }
+
+            //shows or hides the warning related to the selection of the motherboard
+            function showHideMoboWarning(hideOrShow) {
+                let elements = document.getElementsByClassName("selectmotherboardwarning");
+
+                for (let i = 0; i < elements.length; i++)
+                    if(hideOrShow === 1) //hide
+                        elements[i].style.display = "none";
+                    else //show
+                        elements[i].style.display = "block"
+            }
+            
+            function resetMotherboard() {
+                selectElements[1].value = "";
+                motherboardPrice();
+            }
+            
+            function resetCPURAM() {
+                for(let i = 2; i < selectElements.length; i++) {
+                    selectElements[i].style.display = "none";
+                    selectElements[i].value = "";
+                }
+                
+                listOfPrices[2] = 0;
+                listOfPrices[3] = 0;
+                
+                calculateTotal();
+            }
+            
+           /*SECOND PART OF THE SCRIPT (more related to the calculation of the prices)
+             It is pretty straightforward, as it is a bunch of if ... else if statements associated with a specific price*/
+            function casePrice() {
+                let selectedCase = document.getElementById("caseModel");
+                
+                if(selectedCase.value === "")
+                    listOfPrices[0] = 0;
+                else if(selectedCase.value === "atxCASE")
+                    listOfPrices[0] = 100;
+                else if(selectedCase.value === "microatxCASE")
+                    listOfPrices[0] = 80;
+                else if(selectedCase.value === "miniatxCASE")
+                    listOfPrices[0] = 70;
+                
+                calculateTotal();
+            }
+            
+            function motherboardPrice() {
+                let selectedMotherboard = document.getElementById("motherboardModel");
+                
+                if(selectedMotherboard.value === "")
+                    listOfPrices[1] = 0;
+                else if(selectedMotherboard.value === "atxMB")
+                    listOfPrices[1] = 200;
+                else if(selectedMotherboard.value === "microatxMB")
+                    listOfPrices[1] = 100;
+                else if(selectedMotherboard.value === "miniatxMB")
+                    listOfPrices[1] = 80;
+                
+                calculateTotal();
+            }
+            
+            function CPUPrice() {
+                let selectedCPU = [
+                    document.getElementById("HPCPUsModel"),
+                    document.getElementById("MPCPUsModel"),
+                    document.getElementById("BPCPUsModel")
+                ];
+                
+                for(let i = 0; i < selectedCPU.length; i++) {
+                    if(selectedCPU[i].value === "")
+                        listOfPrices[2] = 0;
+                    else if(selectedCPU[i].value === "HPCPU16C32T") {
+                        listOfPrices[2] = 400;
+                        break;
+                    }
+                    else if(selectedCPU[i].value === "HPCPU8C16T") {
+                        listOfPrices[2] = 300;
+                        break;
+                    }
+                    else if(selectedCPU[i].value === "MPCPU6C12T") {
+                        listOfPrices[2] = 230;
+                        break;
+                    }
+                    else if(selectedCPU[i].value === "MPCPU4C8T") {
+                        listOfPrices[2] = 200;
+                        break;
+                    }
+                    else if(selectedCPU[i].value === "MPCPU4C4T") {
+                        listOfPrices[2] = 160;
+                        break;
+                    }
+                    else if(selectedCPU[i].value === "BPCPU2C4T") {
+                        listOfPrices[2] = 80;
+                        break;
+                    }
+                    else if(selectedCPU[i].value === "BPCPU2C2T") {
+                        listOfPrices[2] = 60;
+                        break;
+                    }
+                }
+                
+                calculateTotal();
+            }
+            
+            function RAMPrice() {
+                let selectedRAM = [
+                        document.getElementById("HPRAMModel"),
+                        document.getElementById("MPRAMModel"),
+                        document.getElementById("BPRAMModel")
+                    ];
+                
+                for(let i = 0; i < selectedRAM.length; i++) {
+                    if(selectedRAM[i].value === "")
+                        listOfPrices[3] = 0;
+                    else if(selectedRAM[i].value === "DDR532GB6000") {
+                        listOfPrices[3] = 140;
+                        break;
+                    }
+                    else if(selectedRAM[i].value === "DDR532GB4800") {
+                        listOfPrices[3] = 100;
+                        break;
+                    }
+                    else if(selectedRAM[i].value === "DDR416GB3200") {
+                        listOfPrices[3] = 60;
+                        break;
+                    }
+                    else if(selectedRAM[i].value === "DDR416GB2667") {
+                        listOfPrices[3] = 40;
+                        break;
+                    }
+                    else if(selectedRAM[i].value === "DDR48GB3122") {
+                        listOfPrices[3] = 35;
+                        break;
+                    }
+                    else if(selectedRAM[i].value === "DDR38GB1600") {
+                        listOfPrices[3] = 27;
+                        break;
+                    }
+                }
+                
+                calculateTotal();
+            }
+            
+            function GPUPrice() {
+                let selectedGPU = document.getElementById("GPUModel");
+                
+                if(selectedGPU.value === "")
+                    listOfPrices[4] = 0;
+                else if(selectedGPU.value === "DDR516GB2500")
+                    listOfPrices[4] = 1200;
+                else if(selectedGPU.value === "DDR58GB1700")
+                    listOfPrices[4] = 700;
+                else if(selectedGPU.value === "DDR52GB1400")
+                    listOfPrices[4] = 160;
+                
+                calculateTotal();
+            }
+            
+            function SSDPrice() {
+                let selectedSSD = document.getElementById("SSDModel");
+                
+                if(selectedSSD.value === "")
+                    listOfPrices[5] = 0;
+                else if(selectedSSD.value === "SSD2TB")
+                    listOfPrices[5] = 140;
+                else if(selectedSSD.value === "SSD1TB")
+                    listOfPrices[5] = 70;
+                else if(selectedSSD.value === "SSD500GB")
+                    listOfPrices[5] = 45;
+                else if(selectedSSD.value === "SSD120GB")
+                    listOfPrices[5] = 36;
+                
+                calculateTotal();
+            }
+            
+            function HDDPrice() {
+                let selectedHDD = document.getElementById("HDDModel");
+
+                if(selectedHDD.value === "")
+                    listOfPrices[6] = 0;
+                else if(selectedHDD.value === "HDD2TB")
+                    listOfPrices[6] = 80;
+                else if(selectedHDD.value === "HDD1TB")
+                    listOfPrices[6] = 55;
+                else if(selectedHDD.value === "HDD500GB")
+                    listOfPrices[6] = 38;
+                else if(selectedHDD.value === "HDD120GB")
+                    listOfPrices[6] = 26;
+                
+                calculateTotal();
+            }
+
+            //if any of the following is checked, add the price to the array containing the prices, otherwise set it to 0
+            function discDriveCheck() {
+                if(document.getElementById("discdrivecheck").checked === true)
+                    listOfPrices[7] = 70;
+                else
+                    listOfPrices[7] = 0;
+                
+                calculateTotal();
+            }
+            
+            function additionalFansCheck() {
+                if(document.getElementById("additionalfanscheck").checked === true)
+                    listOfPrices[8] = 30;
+                else
+                    listOfPrices[8] = 0;
+                
+                calculateTotal();
+            }
+            
+            function fanControllerCheck() {
+                if(document.getElementById("fancontrollercheck").checked === true)
+                    listOfPrices[9] = 20;
+                else
+                    listOfPrices[9] = 0;
+                
+                calculateTotal();
+            }
+            
+            function mouseCheck() {
+                if(document.getElementById("mousecheck").checked === true)
+                    listOfPrices[10] = 10;
+                else
+                    listOfPrices[10] = 0;
+                
+                calculateTotal();
+            }
+            
+            function keyboardCheck() {
+                if(document.getElementById("keyboardcheck").checked === true)
+                    listOfPrices[11] = 20;
+                else
+                    listOfPrices[11] = 0;
+                
+                calculateTotal();
+            }
+            
+            function monitorCheck() {
+                if(document.getElementById("monitorcheck").checked === true)
+                    listOfPrices[12] = 200;
+                else
+                    listOfPrices[12] = 0;
+                
+                calculateTotal();
+            }
+
+            //sum the prices in the array
+            function calculateTotal() {
+                let totalCost = 0;
+                
+                for(let c = 0; c < 13; c++)
+                    totalCost += listOfPrices[c];
+
+                //display the updated total cost
+                document.getElementById("totalcost").textContent = totalCost;
+            }
+        </script>
+    </body>
+</html>
